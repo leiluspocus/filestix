@@ -35,6 +35,7 @@ int main() {
 		choice = application_menu();
 		while ( choice != -1 ) {
 			launch_function(choice);
+			choice = application_menu();
 		}
 	}
 	else {
