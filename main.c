@@ -1,6 +1,7 @@
 #include "fdiscovery.h"
 
 int application_menu() {
+	int choice;
 	printf("Press 1 to scan, 2 to send, -1 to exit");
 	scanf("%d", &choice);
 	return choice;
