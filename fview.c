@@ -1,24 +1,50 @@
 #include "fview.h" 
 
-int application_menu() {
-	int choice;
-	printf("Press 1 to scan, 2 to send, -1 to exit");
-	scanf("%d", &choice);
-	return choice;
-}
+GtkWidget *pFileTextView; 
+	
+void OnScan(GtkWidget *pScanDevicesButton, gpointer data) {
+    GtkWidget *pDialog;
+    GtkWidget *pChild;
+    gint iPageNum;
+    const gchar *sLogsLabel;
+    const gchar *sTabLabel;
+    const gchar *sMenuLabel;
+    gchar *sDialogText;
+    char **hostsReachable;
+	int i=0;
+    /* Recuperation de la page active */
+    iPageNum = gtk_notebook_get_current_page(GTK_NOTEBOOK(data));
+    /* Recuperation du widget enfant */
+    pChild = gtk_notebook_get_nth_page(GTK_NOTEBOOK(data), iPageNum);
 
-void launch_function(int choice) {	
-	switch(choice) {
-		case 1:
-			discovery();	
-			break;
-		case 2:
-			send_file();
-			break;
-		default:
-			printf("Unknown choice…");
-			break;
-	}
+    /* Recuperation du label */
+    sLogsLabel = gtk_label_get_text(GTK_LABEL(pChild));
+    /* Recuperation du label de l'onglet */
+    sTabLabel = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK(data), pChild);
+    /* Recuperation du label du menu pop-up */
+    sMenuLabel = gtk_notebook_get_menu_label_text(GTK_NOTEBOOK(data), pChild);
+
+
+	// Calling the method "Scan" of the "fsending" file.
+	hostsReachable = discovery();
+	
+    /* Creation du label de la boite de dialogue */
+    sDialogText = g_strdup_printf("There are %d hosts around \n" 
+        "the first one is \"%s\"\n",
+        sizeof(hostsReachable), 
+        hostsReachable[0]);
+
+    pDialog = gtk_message_dialog_new (NULL,
+        GTK_DIALOG_MODAL,
+        GTK_MESSAGE_INFO,
+        GTK_BUTTONS_OK,
+        sDialogText);
+
+    gtk_dialog_run(GTK_DIALOG(pDialog));
+
+    gtk_widget_destroy(pDialog);
+
+    g_free(sDialogText);	
 }
 
 void OnButton(GtkWidget *pSendFileButton, gpointer data)
@@ -72,7 +98,7 @@ void construct_gui(int argc, char **argv) {
     GtkWidget *pVBox;
     GtkWidget *pNotebook;
     GtkWidget *pSendFileButton;
-	GtkWidget *pFileTextView; 
+    GtkWidget *pScanDevicesButton;
     gint i;
 
     gtk_init(&argc,&argv);
@@ -105,6 +131,41 @@ void construct_gui(int argc, char **argv) {
     gchar *sLogsLabel;
     gchar *sTabLabel;
     
+    
+    
+    gchar *sHostsReachableLabel;
+    // Creation of the "Received Files" panel
+    sHostsReachableLabel = g_strdup_printf("Hosts Reachable");
+    sTabLabel = g_strdup_printf("Hosts Reachable");
+
+    pLabel = gtk_label_new(sHostsReachableLabel);
+    pTabLabel = gtk_label_new(sTabLabel);
+
+
+    pScanDevicesButton = gtk_button_new_with_label("Scan..."); 
+    
+    /* Insertion de la page */
+    gtk_notebook_append_page(GTK_NOTEBOOK(pNotebook), pLabel, pTabLabel);
+    gtk_notebook_append_page(GTK_NOTEBOOK(pNotebook), pScanDevicesButton, pTabLabel);
+
+    g_free(sHostsReachableLabel);
+    g_free(sTabLabel);
+
+    
+    gchar *sFilesReceivedLabel;
+    // Creation of the "Received Files" panel
+    sFilesReceivedLabel = g_strdup_printf("Files received");
+    sTabLabel = g_strdup_printf("Downloads");
+
+    pLabel = gtk_label_new(sFilesReceivedLabel);
+    pTabLabel = gtk_label_new(sTabLabel);
+
+    /* Insertion de la page */
+    gtk_notebook_append_page(GTK_NOTEBOOK(pNotebook), pLabel, pTabLabel);
+
+    g_free(sFilesReceivedLabel);
+    g_free(sTabLabel);
+    
     // Creation of the "Logs" Panel
     sLogsLabel = g_strdup_printf("Logs of the application");
     sTabLabel = g_strdup_printf("Logs");
@@ -118,24 +179,13 @@ void construct_gui(int argc, char **argv) {
     g_free(sLogsLabel);
     g_free(sTabLabel);
     
-    gchar *sFilesReceivedLabel;
-    // Creation of the "Received Files" panel
-    sFilesReceivedLabel = g_strdup_printf("Files received");
-    sTabLabel = g_strdup_printf("Downloads");
-
-    pLabel = gtk_label_new(sFilesReceivedLabel);
-    pTabLabel = gtk_label_new(sTabLabel);
-
-    /* Insertion de la page */
-    gtk_notebook_append_page(GTK_NOTEBOOK(pNotebook), pLabel, pTabLabel);
-
-    g_free(sLogsLabel);
-    g_free(sTabLabel);
+    
     
     /* Activation du menu popup */
     gtk_notebook_popup_enable(GTK_NOTEBOOK(pNotebook));
 
     g_signal_connect(G_OBJECT(pSendFileButton), "clicked", G_CALLBACK(OnButton), pNotebook);
+    g_signal_connect(G_OBJECT(pScanDevicesButton), "clicked", G_CALLBACK(OnScan), pNotebook);
 
     gtk_widget_show_all(pWindow);
 

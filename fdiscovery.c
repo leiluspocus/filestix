@@ -1,13 +1,14 @@
 #include "fdiscovery.h"
 
-void discovery() {
+char** discovery() {
     inquiry_info *ii = NULL;
     int max_rsp, num_rsp;
     int dev_id, sock, len, flags;
     int i;
     char addr[19] = { 0 };
     char name[248] = { 0 };
-
+	char* hosts[200];
+	
     dev_id = hci_get_route(NULL);
     sock = hci_open_dev( dev_id );
     if (dev_id < 0 || sock < 0) {
@@ -30,8 +31,10 @@ void discovery() {
             name, 0) < 0)
         strcpy(name, "[unknown]");
         printf("%s  %s\n", addr, name);
+        strcpy(hosts[i], addr);
     }
 
     free( ii );
     close( sock );
+    return hosts;
 }

@@ -8,5 +8,5 @@
 /**
  * Discovering hosts reachable
  */
-void discovery();
+char** discovery();
 

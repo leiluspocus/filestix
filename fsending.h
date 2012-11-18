@@ -1,3 +1,3 @@
 #include "commonheaders.h"
 
-void send_file();
+char** send_file();

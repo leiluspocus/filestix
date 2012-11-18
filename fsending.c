@@ -45,7 +45,7 @@ void receive_file() {
 /*
  * Sending files mode for the client
  */ 
-void send_file() {
+char** send_file() {
 	struct sockaddr_l2 addr = { 0 };
     int s, status;
     char *message = "hello!";
