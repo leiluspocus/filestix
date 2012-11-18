@@ -21,7 +21,7 @@ void launch_function(int choice) {
 	}
 }
 
-void OnButton(GtkWidget *pSendFileButton, GPointer data)
+void OnButton(GtkWidget *pSendFileButton, gpointer data)
 {
     GtkWidget *pDialog;
     GtkWidget *pChild;

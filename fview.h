@@ -8,4 +8,4 @@ int application_menu() ;
 
 void launch_function(int choice);
 
-void OnButton(GtkWidget *pButton, GPointer data);
+void OnButton(GtkWidget *pButton, gpointer data);
