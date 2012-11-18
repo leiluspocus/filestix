@@ -7,8 +7,10 @@ char** discovery() {
     int i;
     char addr[19] = { 0 };
     char name[248] = { 0 };
-	char* hosts[200];
-	
+	char** hosts = malloc(100 * sizeof(char*));
+	for ( i=0; i < 100 ; ++i ) {
+		hosts[i] = malloc(100*sizeof(char));	
+	}
     dev_id = hci_get_route(NULL);
     sock = hci_open_dev( dev_id );
     if (dev_id < 0 || sock < 0) {
