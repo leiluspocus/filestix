@@ -8,4 +8,5 @@ int application_menu() ;
 
 void launch_function(int choice);
 
-void OnButton(GtkWidget *pButton, gpointer data);
+void OnSend(GtkWidget *pButton, gpointer data);
+void OnScan(GtkWidget *pScanDevicesButton, gpointer data);

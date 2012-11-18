@@ -45,11 +45,11 @@ void receive_file() {
 /*
  * Sending files mode for the client
  */ 
-char** send_file() {
+void send_file() {
 	struct sockaddr_l2 addr = { 0 };
     int s, status;
     char *message = "hello!";
-    char dest[18] = "B8:8D:12:11:5A:1B";
+    char dest[18] = "00:19:88:0B:1B:79";
  
     // allocate a socket
     s = socket(AF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);

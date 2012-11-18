@@ -31,13 +31,14 @@ void OnScan(GtkWidget *pScanDevicesButton, gpointer data) {
     /* Creation du label de la boite de dialogue */
     char * message = malloc(400*sizeof(char));
     strcpy(message, hostsReachable[0]);
+    strcat(message, "\n");
     for ( i=1 ; i <= sizeof(hostsReachable) ; ++i ) {
     	strcat(message, hostsReachable[i]);
     	strcat(message, "\n");
     }
     sDialogText = g_strdup_printf("There are %d hosts around \n" 
         "%s\"\n",
-        sizeof(hostsReachable), 
+        sizeof(hostsReachable)+1, 
         message);
 
     pDialog = gtk_message_dialog_new (NULL,
@@ -55,7 +56,7 @@ void OnScan(GtkWidget *pScanDevicesButton, gpointer data) {
     free(message);
 }
 
-void OnButton(GtkWidget *pSendFileButton, gpointer data)
+void OnSend(GtkWidget *pSendFileButton, gpointer data)
 {
     GtkWidget *pDialog;
     GtkWidget *pChild;
@@ -78,14 +79,9 @@ void OnButton(GtkWidget *pSendFileButton, gpointer data)
     sMenuLabel = gtk_notebook_get_menu_label_text(GTK_NOTEBOOK(data), pChild);
 
     /* Creation du label de la boite de dialogue */
-    sDialogText = g_strdup_printf("C'est la page %d\n"
-        "Le label est \"%s\"\n"
-        "Le label de l'onglet est \"%s\"\n"
-        "Le label du menu est \"%s\"\n",
-        iPageNum,
-        sLogsLabel,
-        sTabLabel,
-        sMenuLabel);
+    send_file();
+    
+    sDialogText = g_strdup_printf("I've sent the file");
 
     pDialog = gtk_message_dialog_new (NULL,
         GTK_DIALOG_MODAL,
@@ -181,7 +177,7 @@ void construct_gui(int argc, char **argv) {
     /* Activation du menu popup */
     gtk_notebook_popup_enable(GTK_NOTEBOOK(pNotebook));
 
-    g_signal_connect(G_OBJECT(pSendFileButton), "clicked", G_CALLBACK(OnButton), pNotebook);
+    g_signal_connect(G_OBJECT(pSendFileButton), "clicked", G_CALLBACK(OnSend), pNotebook);
     g_signal_connect(G_OBJECT(pScanDevicesButton), "clicked", G_CALLBACK(OnScan), pNotebook);
 
     gtk_widget_show_all(pWindow);
