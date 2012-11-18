@@ -29,10 +29,16 @@ void OnScan(GtkWidget *pScanDevicesButton, gpointer data) {
 	hostsReachable = discovery();
 	
     /* Creation du label de la boite de dialogue */
+    char * message = malloc(400*sizeof(char));
+    strcpy(message, hostsReachable[0]);
+    for ( i=1 ; i <= sizeof(hostsReachable) ; ++i ) {
+    	strcat(message, hostsReachable[i]);
+    	strcat(message, "\n");
+    }
     sDialogText = g_strdup_printf("There are %d hosts around \n" 
-        "the first one is \"%s\"\n",
+        "%s\"\n",
         sizeof(hostsReachable), 
-        hostsReachable[0]);
+        message);
 
     pDialog = gtk_message_dialog_new (NULL,
         GTK_DIALOG_MODAL,
@@ -45,6 +51,8 @@ void OnScan(GtkWidget *pScanDevicesButton, gpointer data) {
     gtk_widget_destroy(pDialog);
 
     g_free(sDialogText);	
+    free(hostsReachable);
+    free(message);
 }
 
 void OnButton(GtkWidget *pSendFileButton, gpointer data)
