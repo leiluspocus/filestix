@@ -130,25 +130,14 @@ void construct_gui(int argc, char **argv) {
     GtkWidget *pTabLabel;
     gchar *sLogsLabel;
     gchar *sTabLabel;
-    
-    
-    
-    gchar *sHostsReachableLabel;
-    // Creation of the "Received Files" panel
-    sHostsReachableLabel = g_strdup_printf("Hosts Reachable");
+     
+    // Creation of the "Received Files" panel 
     sTabLabel = g_strdup_printf("Hosts Reachable");
-
-    pLabel = gtk_label_new(sHostsReachableLabel);
     pTabLabel = gtk_label_new(sTabLabel);
-
-
     pScanDevicesButton = gtk_button_new_with_label("Scan..."); 
     
-    /* Insertion de la page */
-    gtk_notebook_append_page(GTK_NOTEBOOK(pNotebook), pLabel, pTabLabel);
+    /* Insertion de la page */ 
     gtk_notebook_append_page(GTK_NOTEBOOK(pNotebook), pScanDevicesButton, pTabLabel);
-
-    g_free(sHostsReachableLabel);
     g_free(sTabLabel);
 
     
