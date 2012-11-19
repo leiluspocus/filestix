@@ -1,7 +1,38 @@
 #include "fview.h" 
 
 GtkWidget *pFileTextView; 
+gchar *sFilesReceivedLabel;
+GtkWidget *pNotebook;
+
+GtkWidget *pWindow;
+GtkWidget *pVBox;
+GtkWidget *pSendFileButton;
+GtkWidget *pScanDevicesButton;
+    
+
+void notifyViewNewFileReceived(char*fileName) {
+	GtkWidget *pDialog;
+	gchar* sDialogText;
+	gtk_notebook_set_current_page (pNotebook, 2);
 	
+    sDialogText = g_strdup_printf("File received ! \n" 
+        "%s\"\n", 
+        fileName);
+
+    pDialog = gtk_message_dialog_new (NULL,
+        GTK_DIALOG_MODAL,
+        GTK_MESSAGE_INFO,
+        GTK_BUTTONS_OK,
+        sDialogText);
+
+    gtk_dialog_run(GTK_DIALOG(pDialog));
+
+    gtk_widget_destroy(pDialog);
+
+    g_free(sDialogText);	
+	
+}
+    
 void OnScan(GtkWidget *pScanDevicesButton, gpointer data) {
     GtkWidget *pDialog;
     GtkWidget *pChild;
@@ -32,13 +63,19 @@ void OnScan(GtkWidget *pScanDevicesButton, gpointer data) {
     char * message = malloc(400*sizeof(char));
     strcpy(message, hostsReachable[0]);
     strcat(message, "\n");
-    for ( i=1 ; i <= sizeof(hostsReachable) ; ++i ) {
-    	strcat(message, hostsReachable[i]);
-    	strcat(message, "\n");
+    if ( hostsReachable != NULL ) {
+    	printf("%d << fview.c", sizeof(hostsReachable));
+	    for ( i=1 ; i <= sizeof(hostsReachable) ; ++i ) {
+	    	strcat(message, hostsReachable[i]);
+	    	strcat(message, "\n");
+	    }
+    }
+    else {
+    	message = "No hosts available";	
     }
     sDialogText = g_strdup_printf("There are %d hosts around \n" 
         "%s\"\n",
-        sizeof(hostsReachable)+1, 
+        sizeof(hostsReachable), 
         message);
 
     pDialog = gtk_message_dialog_new (NULL,
@@ -94,15 +131,11 @@ void OnSend(GtkWidget *pSendFileButton, gpointer data)
     gtk_widget_destroy(pDialog);
 
     g_free(sDialogText);
-}
+} 
+
 
 void construct_gui(int argc, char **argv) {
 	
-    GtkWidget *pWindow;
-    GtkWidget *pVBox;
-    GtkWidget *pNotebook;
-    GtkWidget *pSendFileButton;
-    GtkWidget *pScanDevicesButton;
     gint i;
 
     gtk_init(&argc,&argv);
@@ -145,7 +178,6 @@ void construct_gui(int argc, char **argv) {
     g_free(sTabLabel);
 
     
-    gchar *sFilesReceivedLabel;
     // Creation of the "Received Files" panel
     sFilesReceivedLabel = g_strdup_printf("Files received");
     sTabLabel = g_strdup_printf("Downloads");

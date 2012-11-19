@@ -10,3 +10,4 @@ void launch_function(int choice);
 
 void OnSend(GtkWidget *pButton, gpointer data);
 void OnScan(GtkWidget *pScanDevicesButton, gpointer data);
+void notifyViewNewFileReceived(char*fileName); 

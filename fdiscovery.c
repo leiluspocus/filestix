@@ -24,16 +24,21 @@ char** discovery() {
     ii = (inquiry_info*)malloc(max_rsp * sizeof(inquiry_info));
     
     num_rsp = hci_inquiry(dev_id, len, max_rsp, NULL, &ii, flags);
-    if( num_rsp < 0 ) perror("hci_inquiry");
-
-    for (i = 0; i < num_rsp; i++) {
-        ba2str(&(ii+i)->bdaddr, addr);
-        memset(name, 0, sizeof(name));
-        if (hci_read_remote_name(sock, &(ii+i)->bdaddr, sizeof(name), 
-            name, 0) < 0)
-        strcpy(name, "[unknown]");
-        printf("%s  %s\n", addr, name);
-        strcpy(hosts[i], addr);
+    if( num_rsp < 0 ) {
+    	perror("hci_inquiry");
+    	return NULL;
+    }
+    else {
+    	printf("%d ont repondu a lappel inquiry", num_rsp);
+	    for (i = 0; i < num_rsp; i++) {
+	        ba2str(&(ii+i)->bdaddr, addr);
+	        memset(name, 0, sizeof(name));
+	        if (hci_read_remote_name(sock, &(ii+i)->bdaddr, sizeof(name), 
+	            name, 0) < 0)
+	        strcpy(name, "[unknown]");
+	        printf("%s  %s\n", addr, name);
+	        strcpy(hosts[i], addr);
+	    }
     }
 
     free( ii );
