@@ -6,9 +6,10 @@
 char* receive_file() {
     struct sockaddr_l2 loc_addr = { 0 }, rem_addr = { 0 };
     char buf[1024] = { 0 };
+    char* dest = (char*) malloc(1024*sizeof(char));
     int s, client, bytes_read;
     socklen_t opt = sizeof(rem_addr);
-	char filename[9] = "dummyfile";
+	char filename[] = "dummyfile";
     // allocate socket
     s = socket(AF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
 
@@ -28,26 +29,26 @@ char* receive_file() {
 
     ba2str( &rem_addr.l2_bdaddr, buf );
     fprintf(stderr, "accepted connection from %s\n", buf);
-
+	strcpy(dest, buf);
+	
     memset(buf, 0, sizeof(buf));
 
     // read data from the client
     bytes_read = read(client, buf, sizeof(buf));
     if( bytes_read > 0 ) {
-        printf("received [%s]\n", buf);
-   	    printf("Lets write some shit: %d ", bytes_read);
-   	    FILE *fp = fopen (filename, "r");
+        printf("received [%s]\n", buf); 
+   	    FILE *fp = fopen (filename, "a+");
    	    if ( fp != NULL ) {
    	    	fwrite(buf, bytes_read, 1, fp);
    	    	fclose(fp); 
     		close(client);
     		close(s);	
-    		return filename;
+    		return dest;
    	    }
    	    else {
    	    	// ERROR	
       		fprintf(stderr, "unable to open %s: %s\n", filename, strerror(errno));
-      		exit(1);
+      		return "";
    	    }
     }
 
@@ -60,13 +61,13 @@ char* receive_file() {
 /*
  * Sending files mode for the client
  */ 
-void send_file() {
+int send_file() {
 	struct sockaddr_l2 addr = { 0 };
     int s, status, offset;
     char *message = "hello!";
     char dest[18] = "00:19:88:0B:1B:79"; 
     
-	char filename[9] = "dummyfile";
+	char filename[] = "dummyfile";
     // Variables for the sending of the file
     
  	struct stat stat_buf; /* argument to fstat */
@@ -89,8 +90,8 @@ void send_file() {
    		 /* open the file to be sent */
     	 fd = open(filename, O_RDONLY);
     	 if (fd == -1) {
-      		fprintf(stderr, "unable to open %s: %s\n", filename, strerror(errno));
-      		exit(1);
+      		fprintf(stderr, "unable to open %s   - Cause: %s\n", filename, strerror(errno));
+      		return -1;
     	 }
 
    		 /* get the size of the file to be sent */
@@ -101,19 +102,20 @@ void send_file() {
     	 rc = sendfile (s, fd, &offset, stat_buf.st_size);
     	 if (rc == -1) {
       	 	fprintf(stderr, "error from sendfile: %s\n", strerror(errno));
-      		exit(1);
+      		return -1;
     	 }
     	 if (rc != stat_buf.st_size) {
       		fprintf(stderr, "incomplete transfer from sendfile: %d of %d bytes\n", rc,
               (int)stat_buf.st_size);
-      		exit(1);
+      		 return -1;
     	 }
 
     	 /* close descriptor for file that was sent */
     	 close(fd); 
     }
 
-    if( status < 0 ) perror("uh oh");
+    if( status < 0 ) { perror("uh oh"); return -1; }
 
     close(s);	
+    return 0;
 }

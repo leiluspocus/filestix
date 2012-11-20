@@ -1,3 +1,6 @@
 #include "commonheaders.h"
 
-void send_file();
+int send_file();
+
+// Returns the Bluetooth Address of the sender
+char* receive_file();

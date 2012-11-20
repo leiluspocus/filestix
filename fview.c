@@ -13,9 +13,13 @@ GtkWidget *pScanDevicesButton;
 void notifyViewNewFileReceived(char*fileName) {
 	GtkWidget *pDialog;
 	gchar* sDialogText;
-	gtk_notebook_set_current_page (pNotebook, 2);
+	int argc=0;
+	char ** argv;
+	gtk_init(&argc, &argv);
 	
-    sDialogText = g_strdup_printf("File received ! \n" 
+	gtk_notebook_set_current_page (GTK_NOTEBOOK(pNotebook), 3);
+	
+    sDialogText = g_strdup_printf("File received from \n" 
         "%s\"\n", 
         fileName);
 
@@ -60,12 +64,11 @@ void OnScan(GtkWidget *pScanDevicesButton, gpointer data) {
 	hostsReachable = discovery();
 	
     /* Creation du label de la boite de dialogue */
-    char * message = malloc(400*sizeof(char));
+    char * message = (char*) malloc(400*sizeof(char));
     strcpy(message, hostsReachable[0]);
     strcat(message, "\n");
-    if ( hostsReachable != NULL ) {
-    	printf("%d << fview.c", sizeof(hostsReachable));
-	    for ( i=1 ; i <= sizeof(hostsReachable) ; ++i ) {
+    if ( hostsReachable != NULL ) { 
+	    for ( i=1 ; i < sizeof(hostsReachable) ; ++i ) {
 	    	strcat(message, hostsReachable[i]);
 	    	strcat(message, "\n");
 	    }
@@ -98,6 +101,7 @@ void OnSend(GtkWidget *pSendFileButton, gpointer data)
     GtkWidget *pDialog;
     GtkWidget *pChild;
     gint iPageNum;
+    int res;
     const gchar *sLogsLabel;
     const gchar *sTabLabel;
     const gchar *sMenuLabel;
@@ -116,10 +120,13 @@ void OnSend(GtkWidget *pSendFileButton, gpointer data)
     sMenuLabel = gtk_notebook_get_menu_label_text(GTK_NOTEBOOK(data), pChild);
 
     /* Creation du label de la boite de dialogue */
-    send_file();
-    
-    sDialogText = g_strdup_printf("I've sent the file");
-
+    res = send_file();
+    if ( res != -1 ) {
+   		sDialogText = g_strdup_printf("I've sent the file");
+    }
+    else {
+    	sDialogText = g_strdup_printf("Error ! Are you sure that this file exists?");
+    }
     pDialog = gtk_message_dialog_new (NULL,
         GTK_DIALOG_MODAL,
         GTK_MESSAGE_INFO,
