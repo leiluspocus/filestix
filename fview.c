@@ -121,7 +121,8 @@ void OnSend(GtkWidget *pSendFileButton, gpointer data)
 
     /* Creation du label de la boite de dialogue */
     res = send_file();
-    if ( res != -1 ) {
+    printf("RESULT: %d", res);
+    if ( res == 0 ) {
    		sDialogText = g_strdup_printf("I've sent the file");
     }
     else {
